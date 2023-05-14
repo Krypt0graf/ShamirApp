@@ -1,3 +1,5 @@
+using ShamirApp.Services;
+
 namespace ShamirApp
 {
     public class Program
@@ -8,7 +10,7 @@ namespace ShamirApp
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -29,6 +31,16 @@ namespace ShamirApp
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Account}/{action=Index}");
+
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.AddFile(pathFormat: "log.txt", minimumLevel: LogLevel.Debug, fileSizeLimitBytes: 4294967296);
+            });
+
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+            var sqlClient = NpgsqlClient.GetInstance(connectionString, loggerFactory.CreateLogger<NpgsqlClient>());
+            sqlClient.Init();
 
             app.Run();
         }
