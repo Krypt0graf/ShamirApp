@@ -1,0 +1,29 @@
+﻿<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="~/css/bootadmin.min.css">
+    <title>Анкеты</title>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand navbar-dark bg-info sticky-top pt-1 p[b-1">
+        <a class="navbar-brand" href="#">ShamirVote</a>
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a href="#" id="dd_user" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> User</a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd_user">
+                        <a href="/Account/Logout" class="dropdown-item">Выйти</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    @RenderBody()
+</body>
+<script src="~/js/shared/jquery.min.js"></script>
+<script src="~/js/shared/bootstrap.bundle.min.js"></script>
+<script src="~/js/shared/bootadmin.min.js"></script>
+</html>

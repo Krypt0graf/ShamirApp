@@ -1,0 +1,64 @@
+﻿@{ Layout = "_Admin"; }
+<div class="p-1" style="max-width: 1000px; margin: 0 auto;">
+    <div class="mt-2 mb-2" style="display: flex; justify-content: space-between;">
+        <h3 class="ml-1">Тут будет настройка пользователей</h3>
+        <button id="newUser" class="btn btn-success">Новый пользователь</button>
+    </div>
+    <div class="table-responsive-sm">
+        <table class="table table-sm table-bordered text-center middle table-hover">
+            <thead>
+                <tr>
+                    <th>ФИО</th>
+                    <th>Email</th>
+                    <th>Дата регистрации</th>
+                    <th>Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Кириллов Михаил Александрович</td>
+                    <td>mr.mishana-319@yandex.ru</td>
+                    <td>21/10/2020</td>
+                    <td>
+                        <button class="mt-1 mb-1 btn btn-sm btn-info btn-block">Редактировать</button>
+                        <button class="mt-1 mb-1 btn btn-sm btn-danger btn-block">Удалить</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Кириллов Михаил Александрович</td>
+                    <td>mr.mishana-319@yandex.ru</td>
+                    <td>21/10/2020</td>
+                    <td>
+                        <button class="mt-1 mb-1 btn btn-sm btn-info btn-block">Редактировать</button>
+                        <button class="mt-1 mb-1 btn btn-sm btn-danger btn-block">Удалить</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal fade" id="usermodal">
+    <div class="modal-dialog m-2 mx-auto" style="max-width: 1000px;" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Новый пользователь</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="input-login" class="form-label">Логин</label>
+                    <input type="text" class="form-control" id="input-login" aria-describedby="emailHelp">
+                </div>
+                <div class="mb-3">
+                    <label for="input-password" class="form-label">Пароль</label>
+                    <input type="text" class="form-control" id="input-password" aria-describedby="emailHelp">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="modal-button-ok" class="btn btn-primary">Добавить</button>
+            </div>
+        </div>
+    </div>
+</div>

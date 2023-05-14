@@ -1,0 +1,37 @@
+﻿<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="~/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/css/fontawesome-all.min.css">
+    <link rel="stylesheet" href="~/css/bootadmin.min.css">
+    <title>Admin dashboard</title>
+</head>
+<body class="bg-light">
+    <div class="sidebar sidebar-dark btn-dark toggled" style="position: fixed; z-index: 1000; top: 45.5px;">
+        <ul class="list-unstyled" style="position: sticky;">
+            <li><a href="/Admin/Users"><i class="fa fa-fw fa-user"></i> Пользователи</a></li>
+            <li><a href="/Admin/Index"><i class="fa fa-fw fa-edit"></i> Анкеты</a></li>
+        </ul>
+    </div>
+    <nav class="navbar navbar-expand navbar-dark bg-info sticky-top pt-1 p[b-1">
+        <a class="sidebar-toggle mr-3" href="#"><i class="fa fa-bars"></i></a>
+        <a class="navbar-brand" href="#">ShamirVote</a>
+        <div class="navbar-collapse collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a href="#" id="dd_user" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Admin</a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dd_user">
+                        <a href="/Admin/Logout" class="dropdown-item">Выйти</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    @RenderBody()
+</body>
+<script src="~/js/shared/jquery.min.js"></script>
+<script src="~/js/shared/bootstrap.bundle.min.js"></script>
+<script src="~/js/shared/bootadmin.min.js"></script>
+<script src="~/js/admin/main.js"></script>
+</html>

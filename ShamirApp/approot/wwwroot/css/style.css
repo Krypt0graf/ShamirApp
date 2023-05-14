@@ -1,0 +1,41 @@
+.middle > thead > tr > th {
+    vertical-align: middle;
+}
+.middle > tbody > tr > td{
+    vertical-align: middle;
+}
+.myimg {
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.cell:hover > .trash {
+    display: block;
+}
+
+.cell:hover > .editgroup {
+    display: block;
+}
+
+.trash {
+    display: none;
+    cursor: pointer;
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    right: 2px;
+    top: 2px;
+    border-radius: 50%;
+    background-image: url(trash.png);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.editgroup {
+    display: none;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+}
