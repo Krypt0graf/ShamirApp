@@ -5,6 +5,7 @@ namespace ShamirApp.Controllers
 {
     public class AdminController : Controller
     {
+        #region [IActionResult]
         /// <summary>
         /// Анкеты
         /// </summary>
@@ -19,7 +20,8 @@ namespace ShamirApp.Controllers
         /// <returns></returns>
         public IActionResult Users()
         {
-            return GetView();
+            var model = NpgsqlClient.GetInstance().GetUsers();
+            return GetView(model);
         }
         /// <summary>
         /// Выход
@@ -30,17 +32,29 @@ namespace ShamirApp.Controllers
             HttpContext.Logout();
             return Redirect("~/Login");
         }
-
-        private IActionResult GetView()
+        private IActionResult GetView(object? model = null)
+        {
+            if (CheckAuth())
+                return View(model);
+            return Redirect("~/Login");
+        }
+        #endregion
+        #region [Private]
+        private bool CheckAuth()
         {
             (bool isAuth, bool isAdmin) = HttpContext.TokenAuth();
-            if (isAuth)
-                if (isAdmin)
-                    return View();
-                else
-                    return Redirect("~/Admin");
-            else
-                return Redirect("~/Login");
+            if(isAuth && isAdmin)
+                return true;
+            return false;
         }
+        #endregion
+        #region [API]
+        [HttpPost]
+        public string AddNewUser(string login, string password, string fio)
+        {
+            var id = NpgsqlClient.GetInstance().AddNewUser(login, password, fio);
+            return @$"{{ ""id"":{id} }}";
+        }
+        #endregion
     }
 }

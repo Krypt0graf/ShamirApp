@@ -11,7 +11,9 @@ namespace ShamirApp.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return GetView();
+            if (CheckAuth())
+                return View();
+            return Redirect("~/Login");
         }
         /// <summary>
         /// Выход из аккаунта
@@ -23,16 +25,12 @@ namespace ShamirApp.Controllers
             return Redirect("~/Login");
         }
         
-        private IActionResult GetView()
+        private bool CheckAuth()
         {
             (bool isAuth, bool isAdmin) = HttpContext.TokenAuth();
-            if (isAuth)
-                if (isAdmin)
-                    return Redirect("~/Admin");
-                else
-                    return View();
-            else
-                return Redirect("~/Login");
+            if (isAuth && !isAdmin)
+                return true;
+            return false;
         }
     }
 }

@@ -16,8 +16,12 @@ namespace ShamirApp.Controllers
 
         public IActionResult Index()
         {
-            if (HttpContext.TokenAuth().isAuth)
-                return Redirect("~/Account");
+            (bool isAuth, bool isAdmin) = HttpContext.TokenAuth();
+            if (isAuth)
+                if (isAdmin)
+                    return Redirect("~/Admin");
+                else
+                    return Redirect("~/Account");
             else
                 return View();
         }
@@ -25,8 +29,12 @@ namespace ShamirApp.Controllers
         [HttpPost]
         public IActionResult In(string login, string password)
         {
-            if (HttpContext.LoginAuth(login, password).isAuth)
-                return Redirect("~/Account");
+            (bool isAuth, bool isAdmin) = HttpContext.LoginAuth(login, password);
+            if (isAuth)
+                if (isAdmin)
+                    return Redirect("~/Admin");
+                else
+                    return Redirect("~/Account");
             else
                 return Redirect("~/Login");
         }
