@@ -55,6 +55,20 @@ namespace ShamirApp.Controllers
             var id = NpgsqlClient.GetInstance().AddNewUser(login, password, fio);
             return @$"{{ ""id"":{id} }}";
         }
+
+        [HttpPut]
+        public string EditUser(int id, string login, string password, string fio)
+        {
+            var rows = NpgsqlClient.GetInstance().EditUser(id, login, password, fio);
+            return @$"{{ ""rows"":{rows} }}";
+        }
+
+        [HttpDelete]
+        public string DeleteUser(int id, string login, string password, string fio)
+        {
+            var rows = NpgsqlClient.GetInstance().DeleteUser(id);
+            return @$"{{ ""rows"":{rows} }}";
+        }
         #endregion
     }
 }

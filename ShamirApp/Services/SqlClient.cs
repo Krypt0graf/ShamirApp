@@ -101,6 +101,47 @@ namespace ShamirApp.Services
             }   
         }
 
+        public int EditUser(int id, string login, string password, string fio)
+        {
+            if (id <= 0 || string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+                return 0;
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+            var sql = edit_user
+                .Replace("$id", id.ToString())
+                .Replace("$login", login)
+                .Replace("$password", password)
+                .Replace("$fio", fio);
+            try
+            {
+                return ExecuteNonQuery(sql, nc);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex.Message);
+                return -1;
+            }
+        }
+
+        public int DeleteUser(int id)
+        {
+            if (id <= 0)
+                return 0;
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+            var sql = delete_user
+                .Replace("$id", id.ToString());
+            try
+            {
+                return ExecuteNonQuery(sql, nc);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex.Message);
+                return -1;
+            }
+        }
+
         public (bool exist, bool isAdmin, string token) GetUserFromLogin(string login, string password)
         {
             using var nc = new NpgsqlConnection(_connectionString);
@@ -200,11 +241,17 @@ namespace ShamirApp.Services
             "idForm integer references forms (id));";
 
         private static string get_users =
-            "select u.id, u.login, u.password, u.fio from users u where u.isAdmin = false";
+            "select u.id, u.login, u.password, u.fio from users u where u.isAdmin = false order by id desc";
 
         private const string add_new_user =
             "insert into users (login, password, fio, isAdmin, token)" +
             "values ('$login', '$password', '$fio', '$isAdmin', '$token') returning id;";
+
+        private const string edit_user =
+            "update users set login = '$login', password = '$password', fio = '$fio' where id = $id";
+
+        private const string delete_user =
+            "delete from users where id = $id";
 
         private const string get_user_from_login_and_password =
             "select u.isadmin, u.token from users u where login = '$login' and password = '$password'";

@@ -47,8 +47,8 @@
                             <td>@row.Password</td>
                             <td>@row.FIO</td>
                             <td>
-                                <button class="mt-1 mb-1 btn btn-sm btn-info btn-block" onclick="editUser('@row.Id')">Редактировать</button>
-                                <button class="mt-1 mb-1 btn btn-sm btn-danger btn-block" onclick="deleteUser('@row.Id')">Удалить</button>
+                                <button class="mt-1 mb-1 btn btn-sm btn-info btn-block" onclick="EditUser(this)">Редактировать</button>
+                                <button class="mt-1 mb-1 btn btn-sm btn-danger btn-block" onclick="DeleteUser(this)">Удалить</button>
                             </td>
                         </tr>
                     }
@@ -81,7 +81,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Добавить</button>
+                        <button id="add" type="submit" class="btn btn-primary">Добавить</button>
+                        <button id="save" type="submit" class="btn btn-success d-none">Сохранить</button>
                     </div>
                 </form>
             </div>
