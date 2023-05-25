@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShamirApp.Services;
+using Newtonsoft.Json;
 
 namespace ShamirApp.Controllers
 {
@@ -12,7 +13,8 @@ namespace ShamirApp.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
-            return GetView();
+            var model = NpgsqlClient.GetInstance().GetAllForms();
+            return GetView(model);
         }
         /// <summary>
         /// Пользователи
@@ -48,7 +50,7 @@ namespace ShamirApp.Controllers
             return false;
         }
         #endregion
-        #region [API]
+        #region [USERS]
         [HttpPost]
         public string AddNewUser(string login, string password, string fio)
         {
@@ -68,6 +70,20 @@ namespace ShamirApp.Controllers
         {
             var rows = NpgsqlClient.GetInstance().DeleteUser(id);
             return @$"{{ ""rows"":{rows} }}";
+        }
+        #endregion
+        #region [FORMS]
+        [HttpPost]
+        public string AddNewForm(string title, string[] qs)
+        {
+            var id = NpgsqlClient.GetInstance().AddNewForm(title);
+            var count = NpgsqlClient.GetInstance().AddNewQuestions(qs, id);
+            return @$"{{ ""id"": {id}, ""count"": {count} }}";
+        }
+        public string GetQuestions(int idform)
+        {
+            var qs = NpgsqlClient.GetInstance().GetQuestions(idform);
+            return JsonConvert.SerializeObject(qs);
         }
         #endregion
     }

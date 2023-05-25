@@ -5,7 +5,8 @@ let CurrentId = 0;
 $("#newUser").on("click", function () {
 	DefaultModal();
     $('#usermodal').modal('show'); // Показываем модалку
-});
+})
+
 // Кнопки Добавить / Сохранить на модалке
 $("#newUserForm").submit(function (event) {
 
@@ -58,7 +59,7 @@ $("#newUserForm").submit(function (event) {
 			}
 		});
 	}
-});
+})
 
 // Редактирование пользователя
 function EditUser(e) {
@@ -121,11 +122,13 @@ function EditUserRow(id, login, password, fio) {
 	$(row).children('td')[3].innerHTML = fio;
 }
 
+// удаление строки из таблицы пользователей
 function DeleteUserRow(id) {
 	row = findrow(id, $('#t_users > tbody > tr'));
 	$(row).remove();
 }
 
+// Поиск строки по первому столбцу
 function findrow(id, rows) {
 	for (let row of rows) {
 		if (row.children[0].innerText == id)
@@ -149,6 +152,104 @@ function EditModal(id, login, password, fio) {
 	$('#input-login').val(login);
 	$('#input-password').val(password);
 	$('#input-fio').val(fio);
+	$('#add').addClass('d-none');
+	$('#save').removeClass('d-none');
+}
+
+/*---------------------------------------------------------------------------------------*/
+
+// Кнопка новая анкета
+$("#newForm").on("click", function () {
+	//DefaultModal();
+	$('#modalNewForm').modal('show'); // Показываем модалку
+})
+
+$('#addtextblock').click(function (event) { /* создаем блок для добавления текста */
+	event.preventDefault();
+	addblocktext();
+});
+
+/* Функция добавления блока текста */
+function addblocktext(text = 'Добавьте сюда текст вопроса') {
+	var textblock = $(
+		'<div type="0" class="border mb-2" style="border-radius: 0.25rem;">' +
+			'<div class="w-100" style="display: flex; justify-content: flex-end;">' +
+				'<button title="Удалить этот блок" onclick="deleteblock(this);" class="btn btn-danger mr-0">✕</button>' +
+			'</div>' +
+			'<textarea placeholder="' + text + '" style="width:100%; outline:none; border:none;" required></textarea>' +
+		'</div>');
+	$('#newcontainer').append(textblock);
+}
+
+/* Функция удаления блока из разметки */
+function deleteblock(e) {
+	var block = $(e).parent().parent(); // находим родителя от кликнутой кнопки
+	block.remove(); // удаляем
+};
+
+$("#modalNewForm").submit(function (event) {
+	let button = $(event.originalEvent.submitter).attr('id');
+	event.preventDefault();
+
+	let title = $('#TitleForm').val();
+	let areas = $('#newcontainer').find('textarea');
+	let qs = [];
+	for (let area of areas) {
+		let text = $(area).val();
+		qs.push(text);
+	}
+	if (title.length === 0) {
+		alert('Кажется, не заполнено название анкеты');
+		return;
+	}
+	if (qs.length === 0) {
+		alert('Для добавления анкеты, нужно добавить хотя бы один вопрос');
+		return;
+	}
+
+	if (button === "add") {
+		$.ajax({
+			url: '/Admin/AddNewForm',
+			method: 'post',
+			data: {
+				title: title,
+				qs: qs
+			},
+			success: function (data) {
+				let json = JSON.parse(data);
+				console.log(data);
+				if (json.id === 0)
+					alert('Анкета не добавлена - некорректные данные');
+				else
+					alert('Анкета добавлена: Id = ' + json.id + ', Количество вопросов ' + json.count);
+					//AddNewUserRow(id, login, password, fio);
+				$('#usermodal').modal('hide');
+			}
+		});
+	} else {
+		//edit
+	}
+
+	
+
+
+});
+
+// Редактирование анкеты
+function EditForm(e) {
+	var row = $(e).parent().parent();
+	let id = $(row).children('td')[0].innerHTML;
+	let title = $(row).children('td')[1].innerHTML;
+	
+	EditFormModal(id, title);
+	CurrentId = id;
+	$('#modalNewForm').modal('show'); // Показываем модалку
+}
+
+// Модалка для редактирования анкеты
+function EditFormModal(id, title) {
+	$('#modalFormTitle').text('Редактирование анкеты Id=' + id);
+	$('#TitleForm').val(title);
 	$('#add').addClass('d-none');
 	$('#save').removeClass('d-none');
 }

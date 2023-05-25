@@ -1,5 +1,8 @@
 ﻿using Npgsql;
+using Serilog;
+using ShamirApp.Helpers;
 using ShamirApp.Models.Admin;
+using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
@@ -67,6 +70,7 @@ namespace ShamirApp.Services
             }
         }
 
+        #region [ADMIN USERS]
         /// <summary>
         /// Добавляет нового пользователя
         /// </summary>
@@ -94,11 +98,11 @@ namespace ShamirApp.Services
                     return reader.GetInt32("id");
                 return 0;
             }
-            catch (Exception ex)
+            catch (PostgresException ex)
             {
-                _logger?.LogError(ex.Message);
-                return -1;
+                _logger?.LogError(ex.MessageText);
             }   
+            return -1;
         }
 
         public int EditUser(int id, string login, string password, string fio)
@@ -186,6 +190,96 @@ namespace ShamirApp.Services
                 });
             return list;
         }
+        #endregion
+        #region [ADMIN FORMS]
+        public int AddNewForm(string title)
+        {
+            if (string.IsNullOrEmpty(title))
+                return 0;
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+            var sql = add_new_form
+                .Replace("$title", title);
+            try
+            {
+                var reader = ExecuteReader(sql, nc);
+                if (reader.Read())
+                    return reader.GetInt32("id");
+                return 0;
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return 0;
+        }
+        public int AddNewQuestions(string[] texts, int idform)
+        {
+            if (texts.Length == 0 || idform <= 0)
+                return 0;
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+
+            var sql = add_new_questions
+                .Replace("$values", string.Join(", ", texts.Select(text => $"('{text}', '{idform}')")));
+            try
+            {
+                return ExecuteNonQuery(sql, nc);
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return 0;
+        }
+
+        public List<(int id, string title)> GetAllForms()
+        {
+            var forms = new List<(int id, string title)>();
+
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+
+            var sql = get_all_forms;
+            try
+            {
+                var reader = ExecuteReader(sql, nc);
+                while (reader.Read())
+                {
+                    forms.Add((reader.GetInt32("id"), reader.GetString("title")));
+                }
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return forms;
+        }
+
+        public List<(int id, string text)> GetQuestions(int idform)
+        {
+            var qs = new List<(int id, string text)>();
+
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+
+            var sql = get_questions
+                .Replace("$idform", idform.ToString());
+            try
+            {
+                var reader = ExecuteReader(sql, nc);
+                while (reader.Read())
+                {
+                    qs.Add((reader.GetInt32("id"), reader.GetString("text")));
+                }
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return qs;
+        }
+        #endregion
         #region [ExecuteQuery]
 
         /// <summary>
@@ -231,13 +325,12 @@ namespace ShamirApp.Services
         private const string create_table_forms =
             "create table forms(" +
             "id serial primary key," +
-            "title VARCHAR(200) not null," +
-            "description VARCHAR(200) not null);";
+            "title VARCHAR(200) not null);";
 
         private const string create_table_questions =
             "create table questions(" +
             "id serial primary key," +
-            "title VARCHAR(200) not null," +
+            "text VARCHAR(200) not null," +
             "idForm integer references forms (id));";
 
         private static string get_users =
@@ -259,8 +352,17 @@ namespace ShamirApp.Services
         private const string get_user_from_token =
             "select u.isadmin from users u where token = '$token'";
 
-        private const string check_exist =
-            "select count(*) from users where login = '$login' and password = '$password'";
+        private const string add_new_form =
+            "insert into forms (title) values ('$title') returning id;";
+
+        private const string add_new_questions =
+            "insert into questions (text, idform) values $values;";
+
+        private const string get_all_forms =
+            "select * from forms";
+
+        public const string get_questions =
+            "select * from questions where idform = '$idform'";
         #endregion
     }
 }
