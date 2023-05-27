@@ -160,7 +160,7 @@ function EditModal(id, login, password, fio) {
 
 // Кнопка новая анкета
 $("#newForm").on("click", function () {
-	//DefaultModal();
+	DefaultFormModal();
 	$('#modalNewForm').modal('show'); // Показываем модалку
 })
 
@@ -170,13 +170,14 @@ $('#addtextblock').click(function (event) { /* создаем блок для д
 });
 
 /* Функция добавления блока текста */
-function addblocktext(text = 'Добавьте сюда текст вопроса') {
+function addblocktext(text = '') {
+	let placeholder = 'Добавьте сюда текст вопроса';
 	var textblock = $(
 		'<div type="0" class="border mb-2" style="border-radius: 0.25rem;">' +
 			'<div class="w-100" style="display: flex; justify-content: flex-end;">' +
 				'<button title="Удалить этот блок" onclick="deleteblock(this);" class="btn btn-danger mr-0">✕</button>' +
 			'</div>' +
-			'<textarea placeholder="' + text + '" style="width:100%; outline:none; border:none;" required></textarea>' +
+		'<textarea placeholder="' + placeholder + '" style="width:100%; outline:none; border:none;" required>' + text + '</textarea>' +
 		'</div>');
 	$('#newcontainer').append(textblock);
 }
@@ -236,20 +237,69 @@ $("#modalNewForm").submit(function (event) {
 });
 
 // Редактирование анкеты
-function EditForm(e) {
+function GetInfo(e) {
 	var row = $(e).parent().parent();
 	let id = $(row).children('td')[0].innerHTML;
 	let title = $(row).children('td')[1].innerHTML;
+	let questions = [];
+	$.ajax({
+		url: '/Admin/GetQuestions',
+		method: 'get',
+		async: false,
+		data: {
+			idform: id,
+		},
+		success: function (data) {
+			questions = JSON.parse(data);
+			//console.log(qs[0]);
+		}
+	});
 	
-	EditFormModal(id, title);
-	CurrentId = id;
+	InfoFormModal(id, title, questions);
 	$('#modalNewForm').modal('show'); // Показываем модалку
 }
 
 // Модалка для редактирования анкеты
-function EditFormModal(id, title) {
+function InfoFormModal(id, title, qs) {
 	$('#modalFormTitle').text('Редактирование анкеты Id=' + id);
 	$('#TitleForm').val(title);
 	$('#add').addClass('d-none');
-	$('#save').removeClass('d-none');
+	$('#newcontainer').empty();
+	for (let q of qs) {
+		addblocktext(q.Item2);
+	}
+}
+function DefaultFormModal() {
+	$('#modalFormTitle').text('Редактор анкеты');
+	$('#TitleForm').val('');
+	$('#add').removeClass('d-none');
+	$('#newcontainer').empty();
+}
+function DeleteForm(e) {
+	var row = $(e).parent().parent();
+	let id = $(row).children('td')[0].innerHTML;
+	CurrentId = id;
+	if (confirm("Удалить анкету Id=" + id)) {
+		$.ajax({
+			url: '/Admin/DeleteForm',
+			method: 'delete',
+			data: {
+				id: id
+			},
+			success: function (data) {
+				let rows = JSON.parse(data).rows;
+				if (rows === 0)
+					alert('Форма не удалена - некорректные данные');
+				else if (rows === -1)
+					alert('Форма не удалена - ошибка при сохранении изменений, проверьте данные');
+				else
+					DeleteFormRow(id);
+			}
+		});
+	}
+}
+// удаление строки из таблицы пользователей
+function DeleteFormRow(id) {
+	row = findrow(id, $('#t_forms > tbody > tr'));
+	$(row).remove();
 }

@@ -12,7 +12,10 @@ namespace ShamirApp.Controllers
         public IActionResult Index()
         {
             if (CheckAuth())
-                return View();
+            {
+                var model = NpgsqlClient.GetInstance().GetAllForms();
+                return View(model);
+            }
             return Redirect("~/Login");
         }
         /// <summary>
@@ -31,6 +34,14 @@ namespace ShamirApp.Controllers
             if (isAuth && !isAdmin)
                 return true;
             return false;
+        }
+
+        public IActionResult Form(int id)
+        {
+            var sqlClient = NpgsqlClient.GetInstance();
+            var form = sqlClient.GetForm(id);
+            var questions = sqlClient.GetQuestions(id);
+            return View((form, questions));
         }
     }
 }

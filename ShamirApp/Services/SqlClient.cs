@@ -256,6 +256,27 @@ namespace ShamirApp.Services
             return forms;
         }
 
+        public (int id, string title) GetForm(int idform)
+        {
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+
+            var sql = get_form
+                .Replace("$id", idform.ToString());
+            try
+            {
+                var reader = ExecuteReader(sql, nc);
+                if (reader.Read())
+                    return (reader.GetInt32("id"), reader.GetString("title"));
+                return (0, "");
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return (-1, "");
+        }
+
         public List<(int id, string text)> GetQuestions(int idform)
         {
             var qs = new List<(int id, string text)>();
@@ -278,6 +299,44 @@ namespace ShamirApp.Services
                 _logger?.LogError(ex.MessageText);
             }
             return qs;
+        }
+
+        public int DeleteForm(int id)
+        {
+            if (id <= 0)
+                return 0;
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+            var sql = delete_form
+                .Replace("$id", id.ToString());
+            try
+            {
+                return ExecuteNonQuery(sql, nc);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex.Message);
+                return -1;
+            }
+        }
+
+        public int DeleteQuestions(int idform)
+        {
+            if (idform <= 0)
+                return 0;
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+            var sql = delete_questions
+                .Replace("$idform", idform.ToString());
+            try
+            {
+                return ExecuteNonQuery(sql, nc);
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex.Message);
+                return -1;
+            }
         }
         #endregion
         #region [ExecuteQuery]
@@ -361,8 +420,17 @@ namespace ShamirApp.Services
         private const string get_all_forms =
             "select * from forms";
 
+        private const string get_form =
+            "select * from forms where id = '$id'";
+
         public const string get_questions =
             "select * from questions where idform = '$idform'";
+
+        public const string delete_form =
+            "delete from forms where id = $id";
+
+        public const string delete_questions =
+            "delete from questions where idform = '$idform'";
         #endregion
     }
 }

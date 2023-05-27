@@ -10,7 +10,7 @@
         <button id="newForm" class="btn btn-success">&#10010; Новая анкета</button>
     </div>
     <div class="table-responsive-sm">
-        <table id="t_users" class="table table-sm table-bordered text-center middle table-hover">
+        <table id="t_forms" class="table table-sm table-bordered text-center middle table-hover">
             
             @{
                 if (Model.Count > 0)
@@ -42,7 +42,7 @@
                             <td>@row.id</td>
                             <td>@row.title</td>
                             <td>
-                                <button class="mt-1 mb-1 btn btn-sm btn-info btn-block" onclick="EditForm(this)">Редактировать</button>
+                                <button class="mt-1 mb-1 btn btn-sm btn-info btn-block" onclick="GetInfo(this)">Просмотр</button>
                                 <button class="mt-1 mb-1 btn btn-sm btn-danger btn-block" onclick="DeleteForm(this)">Удалить</button>
                             </td>
                         </tr>
@@ -80,7 +80,6 @@
                     </div>
                     <div class="modal-footer">
                         <button id="add" type="submit" class="btn btn-success">Добавить анкету</button>
-                        <button id="save" type="submit" class="btn btn-primary d-none">Сохранить</button>
                     </div>
                 </form>
             </div>

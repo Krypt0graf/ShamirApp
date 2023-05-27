@@ -83,7 +83,16 @@ namespace ShamirApp.Controllers
         public string GetQuestions(int idform)
         {
             var qs = NpgsqlClient.GetInstance().GetQuestions(idform);
-            return JsonConvert.SerializeObject(qs);
+            var json = JsonConvert.SerializeObject(qs);
+            return json;
+        }
+        [HttpDelete]
+        public string DeleteForm(int id)
+        {
+            var sqlClient = NpgsqlClient.GetInstance();
+            sqlClient.DeleteQuestions(id);
+            var rows = sqlClient.DeleteForm(id);
+            return @$"{{ ""rows"":{rows} }}";
         }
         #endregion
     }
