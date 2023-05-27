@@ -27,13 +27,19 @@ $("#newUserForm").submit(function (event) {
 				fio: fio
 			},
 			success: function (data) {
-				let id = JSON.parse(data).id;
-				if (id === 0)
+				let json = JSON.parse(data);
+
+				if (json.status !== 200) {
+					alert('Вы не авторизованы! Авторизуйтесь снова');
+					return;
+				}
+
+				if (json.id === 0)
 					alert('Пользователь не добавлен - некорректные данные');
-				else if (id === -1)
+				else if (json.id === -1)
 					alert('Пользователь не добавлен - скорее всего, пользователь с такими данными уже существует');
 				else
-					AddNewUserRow(id, login, password, fio);
+					AddNewUserRow(json.id, login, password, fio);
 				$('#usermodal').modal('hide');
 			}
 		});
@@ -48,10 +54,16 @@ $("#newUserForm").submit(function (event) {
 				fio: fio
 			},
 			success: function (data) {
-				let rows = JSON.parse(data).rows;
-				if (rows === 0)
+				let json = JSON.parse(data);
+
+				if (json.status !== 200) {
+					alert('Вы не авторизованы! Авторизуйтесь снова');
+					return;
+				}
+
+				if (json.rows === 0)
 					alert('Произошла ошибка - кажется, такого пользователя нет');
-				else if (rows === -1)
+				else if (json.rows === -1)
 					alert('Пользователь не отредактирован - ошибка при сохранении изменений, проверьте данные');
 				else
 					EditUserRow(CurrentId, login, password, fio);
@@ -86,10 +98,16 @@ function DeleteUser(e) {
 				id: id
 			},
 			success: function (data) {
-				let rows = JSON.parse(data).rows;
-				if (rows === 0)
+				let json = JSON.parse(data);
+
+				if (json.status !== 200) {
+					alert('Вы не авторизованы! Авторизуйтесь снова');
+					return;
+				}
+
+				if (json.rows === 0)
 					alert('Пользователь не удален - некорректные данные');
-				else if (rows === -1)
+				else if (json.rows === -1)
 					alert('Пользователь не удален - ошибка при сохранении изменений, проверьте данные');
 				else
 					DeleteUserRow(id);
@@ -218,7 +236,12 @@ $("#modalNewForm").submit(function (event) {
 			},
 			success: function (data) {
 				let json = JSON.parse(data);
-				console.log(data);
+
+				if (json.status !== 200) {
+					alert('Вы не авторизованы! Авторизуйтесь снова');
+					return;
+				}
+
 				if (json.id === 0)
 					alert('Анкета не добавлена - некорректные данные');
 				else
@@ -250,7 +273,13 @@ function GetInfo(e) {
 			idform: id,
 		},
 		success: function (data) {
-			questions = JSON.parse(data);
+			json = JSON.parse(data);
+
+			if (json.status !== 200) {
+				alert('Вы не авторизованы! Авторизуйтесь снова');
+				return;
+			}
+
 			//console.log(qs[0]);
 		}
 	});
@@ -287,10 +316,16 @@ function DeleteForm(e) {
 				id: id
 			},
 			success: function (data) {
-				let rows = JSON.parse(data).rows;
-				if (rows === 0)
+				let json = JSON.parse(data);
+
+				if (json.status !== 200) {
+					alert('Вы не авторизованы! Авторизуйтесь снова');
+					return;
+				}
+
+				if (json.rows === 0)
 					alert('Форма не удалена - некорректные данные');
-				else if (rows === -1)
+				else if (json.rows === -1)
 					alert('Форма не удалена - ошибка при сохранении изменений, проверьте данные');
 				else
 					DeleteFormRow(id);

@@ -13,6 +13,10 @@ namespace ShamirApp.Controllers
         /// <returns></returns>
         public IActionResult Index()
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return Redirect("~/Login");
+
             var model = NpgsqlClient.GetInstance().GetAllForms();
             return GetView(model);
         }
@@ -22,6 +26,10 @@ namespace ShamirApp.Controllers
         /// <returns></returns>
         public IActionResult Users()
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return Redirect("~/Login");
+
             var model = NpgsqlClient.GetInstance().GetUsers();
             return GetView(model);
         }
@@ -36,24 +44,31 @@ namespace ShamirApp.Controllers
         }
         private IActionResult GetView(object? model = null)
         {
-            if (CheckAuth())
-                return View(model);
-            return Redirect("~/Login");
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return Redirect("~/Login");
+
+            return View(model);
+            
         }
         #endregion
         #region [Private]
-        private bool CheckAuth()
+        private (bool isAuth, string login) CheckAuth()
         {
-            (bool isAuth, bool isAdmin) = HttpContext.TokenAuth();
-            if(isAuth && isAdmin)
-                return true;
-            return false;
+            TokenAuthInfo auth = HttpContext.TokenAuth();
+            if(auth.Exist && auth.IsAdmin)
+                return (true, auth.Login);
+            return (false, string.Empty);
         }
         #endregion
         #region [USERS]
         [HttpPost]
         public string AddNewUser(string login, string password, string fio)
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return @$"{{ ""status"":{403} }}";
+
             var id = NpgsqlClient.GetInstance().AddNewUser(login, password, fio);
             return @$"{{ ""id"":{id} }}";
         }
@@ -61,6 +76,10 @@ namespace ShamirApp.Controllers
         [HttpPut]
         public string EditUser(int id, string login, string password, string fio)
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return @$"{{ ""status"":{403} }}";
+
             var rows = NpgsqlClient.GetInstance().EditUser(id, login, password, fio);
             return @$"{{ ""rows"":{rows} }}";
         }
@@ -68,6 +87,10 @@ namespace ShamirApp.Controllers
         [HttpDelete]
         public string DeleteUser(int id, string login, string password, string fio)
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return @$"{{ ""status"":{403} }}";
+
             var rows = NpgsqlClient.GetInstance().DeleteUser(id);
             return @$"{{ ""rows"":{rows} }}";
         }
@@ -76,12 +99,20 @@ namespace ShamirApp.Controllers
         [HttpPost]
         public string AddNewForm(string title, string[] qs)
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return @$"{{ ""status"":{403} }}";
+
             var id = NpgsqlClient.GetInstance().AddNewForm(title);
             var count = NpgsqlClient.GetInstance().AddNewQuestions(qs, id);
             return @$"{{ ""id"": {id}, ""count"": {count} }}";
         }
         public string GetQuestions(int idform)
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return @$"{{ ""status"":{403} }}";
+
             var qs = NpgsqlClient.GetInstance().GetQuestions(idform);
             var json = JsonConvert.SerializeObject(qs);
             return json;
@@ -89,6 +120,10 @@ namespace ShamirApp.Controllers
         [HttpDelete]
         public string DeleteForm(int id)
         {
+            var auth = CheckAuth();
+            if (!auth.isAuth)
+                return @$"{{ ""status"":{403} }}";
+
             var sqlClient = NpgsqlClient.GetInstance();
             sqlClient.DeleteQuestions(id);
             var rows = sqlClient.DeleteForm(id);

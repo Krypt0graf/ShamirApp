@@ -5,68 +5,35 @@
 @model ((int id, string title) form, List<(int id, string text)> questions);
 <div class="container fullnew pb-4 pt-2">
     <div>
-        <!-- $('input[type="radio"]') -->
-        <h4 class="mycol6 mb-4 mt-4 text-center">Название анкеты</h4>
+        <h4 class="mycol6 mb-4 mt-4 text-center" id="formid" formid="@Model.form.id">Название анкеты</h4>
 
         <form id="formvote">
-        <div class="row p-3 m-3" style="border: 1px solid #dee2e6;">
-            <div class="col-lg-6">
-                <div class="row">
-                    <p>Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu gravida. Aliquam varius finibus est, interdum justo suscipit id.Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu gravida. Aliquam varius finibus est, interdum justo suscipit id.</p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q_1" id="q_1_yes" required>
-                        <label class="form-check-label" for="q_1_yes">Да</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q_1" id="q_1_no">
-                        <label class="form-check-label" for="q_1_no">Нет</label>
-                    </div>
-                </div>
-            </div>
-        </div>
+            @{ foreach (var question in Model.questions)
+                {
+                        <div class="row p-3 m-3" style="border: 1px solid #dee2e6; border-radius: 2%;">
+                            <div class="col-lg-11">
+                                <div class="row">
+                                    <p>@question.text</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-1">
+                                <div>
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q-@question.id" id="q-@question.id-yes" required>
+                                    <label class="form-check-label" for="q-@question.id-yes">Да</label>
+                                    </div>
 
-        <div class="row p-3 m-3" style="border: 1px solid #dee2e6;">
-            <div class="col-lg-6">
-                <div class="row">
-                    <p>Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu gravida. Aliquam varius finibus est, interdum justo suscipit id.Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu gravida. Aliquam varius finibus est, interdum justo suscipit id.</p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div>
-                    <div class="form-check">
-                            <input class="form-check-input" type="radio" name="q_2" id="q_2_yes" required>
-                        <label class="form-check-label" for="q_2_yes">Да</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q_2" id="q_2_no">
-                        <label class="form-check-label" for="q_2_no">Нет</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row p-3 m-3" style="border: 1px solid #dee2e6;">
-            <div class="col-lg-6">
-                <div class="row">
-                    <p>Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu gravida. Aliquam varius finibus est, interdum justo suscipit id.Aenean tortor est, vulputate quis leo in, vehicula rhoncus lacus. Praesent aliquam in tellus eu gravida. Aliquam varius finibus est, interdum justo suscipit id.</p>
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div>
-                    <div class="form-check">
-                            <input class="form-check-input" type="radio" name="q_3" id="q_3_yes" required>
-                        <label class="form-check-label" for="q_3_yes">Да</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="q_3" id="q_3_no">
-                        <label class="form-check-label" for="q_3_no">Нет</label>
-                    </div>
-                </div>
-            </div>
-        </div>
+                                    <div class="m-3"></div>
+
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="q-@question.id" id="q-@question.id-no">
+                                    <label class="form-check-label" for="q-@question.id-no">Нет</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                }
+        }
         <div class="row p-3 m-3">
             <button class="btn btn-success mx-auto">Завершить анкету</button>
         </div>

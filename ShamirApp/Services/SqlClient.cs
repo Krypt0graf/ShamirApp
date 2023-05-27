@@ -42,7 +42,7 @@ namespace ShamirApp.Services
             nc.Open();
 
             // Сделаем запрос всех таблиц
-            _logger.LogInformation("Проверка таблиц в базе данных");
+            _logger?.LogInformation("Проверка таблиц в базе данных");
 
             var tables = new List<string>();
             var reader = ExecuteReader(select_all_tables, nc);
@@ -50,22 +50,22 @@ namespace ShamirApp.Services
                 tables.Add(reader.GetString("table_name"));
             reader.Close();
 
-            _logger.LogInformation($"Таблиц найдено: {tables.Count}");
+            _logger?.LogInformation($"Таблиц найдено: {tables.Count}");
 
             // Если какие то отсутствуют - создадим
             if (!tables.Contains("users"))
             {
-                _logger.LogInformation("Создание таблицы 'users'");
+                _logger?.LogInformation("Создание таблицы 'users'");
                 ExecuteNonQuery(create_table_users, nc);
             }
             if (!tables.Contains("forms"))
             {
-                _logger.LogInformation("Создание таблицы 'forms'");
+                _logger?.LogInformation("Создание таблицы 'forms'");
                 ExecuteNonQuery(create_table_forms, nc);
             }
             if (!tables.Contains("questions"))
             {
-                _logger.LogInformation("Создание таблицы 'questions'");
+                _logger?.LogInformation("Создание таблицы 'questions'");
                 ExecuteNonQuery(create_table_questions, nc);
             }
         }
@@ -146,32 +146,39 @@ namespace ShamirApp.Services
             }
         }
 
-        public (bool exist, bool isAdmin, string token) GetUserFromLogin(string login, string password)
+        public LoginAuthInfo GetUserFromLogin(string login, string password)
         {
+            if(string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
+                return new LoginAuthInfo();
+
             using var nc = new NpgsqlConnection(_connectionString);
             nc.Open();
             var sql = get_user_from_login_and_password
                 .Replace("$login", login)
                 .Replace("$password", password);
             var reader = ExecuteReader(sql, nc);
+
             if (reader.Read())
-                return (true, reader.GetBoolean("isAdmin"), reader.GetString("token"));
-            return (false, false, "");
+                return new LoginAuthInfo(true, reader.GetBoolean("isAdmin"), reader.GetString("token"));
+
+            return new LoginAuthInfo();
         }
 
-        public (bool exist, bool isAdmin) GetUserFromToken(string? token)
+        public TokenAuthInfo GetUserFromToken(string? token)
         {
             if (token == null)
-                return (false, false);
+                return new TokenAuthInfo();
 
             using var nc = new NpgsqlConnection(_connectionString);
             nc.Open();
             var sql = get_user_from_token
                 .Replace("$token", token);
             var reader = ExecuteReader(sql, nc);
+
             if (reader.Read())
-                return (true, reader.GetBoolean("isAdmin"));
-            return (false, false);
+                return new TokenAuthInfo (true, reader.GetBoolean("isAdmin"), reader.GetString("login"));
+
+            return new TokenAuthInfo();
         }
 
         public List<UserView> GetUsers()
@@ -409,7 +416,7 @@ namespace ShamirApp.Services
             "select u.isadmin, u.token from users u where login = '$login' and password = '$password'";
 
         private const string get_user_from_token =
-            "select u.isadmin from users u where token = '$token'";
+            "select * from users where token = '$token'";
 
         private const string add_new_form =
             "insert into forms (title) values ('$title') returning id;";
