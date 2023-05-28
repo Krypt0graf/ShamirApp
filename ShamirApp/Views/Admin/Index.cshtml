@@ -44,6 +44,7 @@
                             <td>
                                 <button class="mt-1 mb-1 btn btn-sm btn-info btn-block" onclick="GetInfo(this)">Просмотр</button>
                                 <button class="mt-1 mb-1 btn btn-sm btn-danger btn-block" onclick="DeleteForm(this)">Удалить</button>
+                                <button class="mt-1 mb-1 btn btn-sm btn-warning btn-block" onclick="GetResultForm(this)">Результаты</button>
                             </td>
                         </tr>
                     }
@@ -85,4 +86,39 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="resultsmodal">
+        <div class="modal-dialog m-2 mx-auto" style="max-width: 1000px;" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalTitle">Результаты голосования</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">✕</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p id="resultsmodal_title"></p>
+                        <p id="resultsmodal_count"></p>
+                    </div>
+                    <div class="mb-3">
+                        <div class="table-responsive-sm">
+                        <table id="t_results" class="table table-sm table-bordered text-center middle table-hover">
+                                <thead id="resultsmodal_head" class="d-none">
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Title</th>
+                                        <th>Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="resultsmodal_body"></tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
 </div>

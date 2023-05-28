@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ShamirApp.Services;
 using Newtonsoft.Json;
+using ShamirApp.Models.Account;
 
 namespace ShamirApp.Controllers
 {
@@ -56,8 +57,11 @@ namespace ShamirApp.Controllers
         private (bool isAuth, string login) CheckAuth()
         {
             TokenAuthInfo auth = HttpContext.TokenAuth();
-            if(auth.Exist && auth.IsAdmin)
+            if (auth.Exist && auth.IsAdmin)
+            {
+                ViewData["login"] = auth.Login;
                 return (true, auth.Login);
+            }
             return (false, string.Empty);
         }
         #endregion
@@ -128,6 +132,45 @@ namespace ShamirApp.Controllers
             sqlClient.DeleteQuestions(id);
             var rows = sqlClient.DeleteForm(id);
             return @$"{{ ""rows"":{rows} }}";
+        }
+        public string GetResult(int idform)
+        {
+            var results = NpgsqlClient.GetInstance().GetResult(idform);
+            var questions = NpgsqlClient.GetInstance().GetQuestions(idform);
+            var count_users = results.DistinctBy(x => x.IdUser).Count();
+            var formResult = new FormResult 
+            {
+                CountVotes = count_users
+            };
+
+            foreach (var (id, text) in questions)
+            {
+                var sp = new Point[3] { new Point(0, 0), new Point(0, 0), new Point(0, 0)};
+                var qs = results.Where(r => r.IdQuestion == id).ToList();
+                foreach (var item in qs)
+                {
+                    sp[0].X += item.Points[0].X;
+                    sp[0].Y += item.Points[0].Y;
+
+                    sp[1].X += item.Points[1].X;
+                    sp[1].Y += item.Points[1].Y;
+
+                    sp[2].X += item.Points[2].X;
+                    sp[2].Y += item.Points[2].Y;
+                }
+
+                if (qs.Count > 0)
+                {
+                    var r = (int)Crypto.Interpolate(sp.ToList(), 0);
+                    formResult.Results.Add(new Info
+                    {
+                        IdQuestion = id,
+                        Text = text,
+                        Value = r
+                    });
+                }
+            }
+            return JsonConvert.SerializeObject(formResult);
         }
         #endregion
     }

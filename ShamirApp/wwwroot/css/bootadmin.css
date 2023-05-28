@@ -30,7 +30,7 @@ body {
 .sidebar {
     min-width: 230px;
     max-width: 230px;
-    min-height: calc(100vh - 49px);
+    min-height: calc(100vh - 47px);
     transition: all 0.3s;
 }
 .sidebar ul li a {

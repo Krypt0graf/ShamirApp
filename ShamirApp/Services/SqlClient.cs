@@ -1,6 +1,8 @@
-﻿using Npgsql;
+﻿using Newtonsoft.Json;
+using Npgsql;
 using Serilog;
 using ShamirApp.Helpers;
+using ShamirApp.Models.Account;
 using ShamirApp.Models.Admin;
 using System.Collections.Generic;
 using System.Data;
@@ -176,7 +178,7 @@ namespace ShamirApp.Services
             var reader = ExecuteReader(sql, nc);
 
             if (reader.Read())
-                return new TokenAuthInfo (true, reader.GetBoolean("isAdmin"), reader.GetString("login"));
+                return new TokenAuthInfo (true, reader.GetBoolean("isAdmin"), reader.GetInt32("id"), reader.GetString("login"));
 
             return new TokenAuthInfo();
         }
@@ -240,14 +242,15 @@ namespace ShamirApp.Services
             return 0;
         }
 
-        public List<(int id, string title)> GetAllForms()
+        public List<(int id, string title)> GetAllForms(int iduser = 0)
         {
             var forms = new List<(int id, string title)>();
 
             using var nc = new NpgsqlConnection(_connectionString);
             nc.Open();
 
-            var sql = get_all_forms;
+            var sql = get_all_forms
+                .Replace("$iduser", iduser.ToString());
             try
             {
                 var reader = ExecuteReader(sql, nc);
@@ -345,6 +348,60 @@ namespace ShamirApp.Services
                 return -1;
             }
         }
+
+        public int AddNewResults(int idform, int iduser, List<VoteInfo> votes)
+        {
+            if (votes.Count == 0 || idform <= 0 || iduser <= 0)
+                return 0;
+
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+
+            var sql = add_new_result
+                .Replace("$values", string.Join(", ", votes.Select(v => 
+                    $"('{idform}', '{iduser}', '{v.Id}', '{JsonConvert.SerializeObject(v.Points)}')")));
+            
+            try
+            {
+                return ExecuteNonQuery(sql, nc);
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return 0;
+        }
+
+        public List<Result> GetResult(int idform)
+        {
+            var result = new List<Result>();
+
+            using var nc = new NpgsqlConnection(_connectionString);
+            nc.Open();
+
+            var sql = get_result
+                .Replace("$idform", idform.ToString());
+            try
+            {
+                var reader = ExecuteReader(sql, nc);
+                while (reader.Read())
+                {
+                    result.Add(new Result
+                    {
+                        IdForm = reader.GetInt32("idform"),
+                        IdUser = reader.GetInt32("iduser"),
+                        IdQuestion = reader.GetInt32("idquestion"),
+                        Points = JsonConvert.DeserializeObject<List<Point>>(reader.GetString("points"))
+                    });
+                    
+                }
+            }
+            catch (PostgresException ex)
+            {
+                _logger?.LogError(ex.MessageText);
+            }
+            return result;
+        }
         #endregion
         #region [ExecuteQuery]
 
@@ -425,7 +482,7 @@ namespace ShamirApp.Services
             "insert into questions (text, idform) values $values;";
 
         private const string get_all_forms =
-            "select * from forms";
+            "select id, title from forms where id not in (select distinct r.idform from results r where r.iduser = $iduser);";
 
         private const string get_form =
             "select * from forms where id = '$id'";
@@ -438,6 +495,12 @@ namespace ShamirApp.Services
 
         public const string delete_questions =
             "delete from questions where idform = '$idform'";
+
+        private const string add_new_result =
+            "insert into results (idform, iduser, idquestion, points) values $values;";
+
+        private const string get_result =
+            "select * from results where idform = '$idform'";
         #endregion
     }
 }

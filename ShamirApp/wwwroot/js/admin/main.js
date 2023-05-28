@@ -29,10 +29,10 @@ $("#newUserForm").submit(function (event) {
 			success: function (data) {
 				let json = JSON.parse(data);
 
-				if (json.status !== 200) {
+				/*if (json.status !== 200) {
 					alert('Вы не авторизованы! Авторизуйтесь снова');
 					return;
-				}
+				}*/
 
 				if (json.id === 0)
 					alert('Пользователь не добавлен - некорректные данные');
@@ -56,10 +56,10 @@ $("#newUserForm").submit(function (event) {
 			success: function (data) {
 				let json = JSON.parse(data);
 
-				if (json.status !== 200) {
+				/*if (json.status !== 200) {
 					alert('Вы не авторизованы! Авторизуйтесь снова');
 					return;
-				}
+				}*/
 
 				if (json.rows === 0)
 					alert('Произошла ошибка - кажется, такого пользователя нет');
@@ -100,10 +100,10 @@ function DeleteUser(e) {
 			success: function (data) {
 				let json = JSON.parse(data);
 
-				if (json.status !== 200) {
+				/*if (json.status !== 200) {
 					alert('Вы не авторизованы! Авторизуйтесь снова');
 					return;
-				}
+				}*/
 
 				if (json.rows === 0)
 					alert('Пользователь не удален - некорректные данные');
@@ -237,10 +237,10 @@ $("#modalNewForm").submit(function (event) {
 			success: function (data) {
 				let json = JSON.parse(data);
 
-				if (json.status !== 200) {
+				/*if (json.status !== 200) {
 					alert('Вы не авторизованы! Авторизуйтесь снова');
 					return;
-				}
+				}*/
 
 				if (json.id === 0)
 					alert('Анкета не добавлена - некорректные данные');
@@ -274,11 +274,11 @@ function GetInfo(e) {
 		},
 		success: function (data) {
 			json = JSON.parse(data);
-
-			if (json.status !== 200) {
+			questions = json;
+			/*if (json.status !== 200) {
 				alert('Вы не авторизованы! Авторизуйтесь снова');
 				return;
-			}
+			}*/
 
 			//console.log(qs[0]);
 		}
@@ -318,10 +318,10 @@ function DeleteForm(e) {
 			success: function (data) {
 				let json = JSON.parse(data);
 
-				if (json.status !== 200) {
+				/*if (json.status !== 200) {
 					alert('Вы не авторизованы! Авторизуйтесь снова');
 					return;
-				}
+				}*/
 
 				if (json.rows === 0)
 					alert('Форма не удалена - некорректные данные');
@@ -337,4 +337,48 @@ function DeleteForm(e) {
 function DeleteFormRow(id) {
 	row = findrow(id, $('#t_forms > tbody > tr'));
 	$(row).remove();
+}
+
+function GetResultForm(e) {
+	var row = $(e).parent().parent();
+	let id = $(row).children('td')[0].innerHTML;
+	let title = $(row).children('td')[1].innerHTML;
+	$.ajax({
+		url: '/Admin/GetResult',
+		method: 'get',
+		async: false,
+		data: {
+			idform: id,
+		},
+		success: function (data) {
+			json = JSON.parse(data);
+			let countVotes = json.CountVotes;
+			let results = json.Results; // IdQuestion Text Value
+			Showresults(title, countVotes, results);
+		}
+	});
+}
+function Showresults(title, countVotes, results) {
+	DefaultResultForm();
+	$('#resultsmodal_title').text(title);
+	$('#resultsmodal_count').text(`Количество участников: ${countVotes}`);
+	if (results.length > 0) {
+		$('#resultsmodal_head').removeClass('d-none');
+		for (let res of results) {
+			let block = $(
+				'<tr>' +
+				'<td>' + res.IdQuestion + '</td>' +
+				'<td>' + res.Text + '</td>' +
+				'<td>' + res.Value + '</td>' +
+				'</tr>');
+			$('#resultsmodal_body').append(block);
+		}
+	}
+	$('#resultsmodal').modal('show');
+}
+function DefaultResultForm() {
+	$('#resultsmodal_title').text('');
+	$('#resultsmodal_count').text('');
+	$('#resultsmodal_head').addClass('d-none');
+	$('#resultsmodal_body').empty();
 }

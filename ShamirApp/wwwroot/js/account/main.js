@@ -36,14 +36,12 @@ $("#formvote").submit(function (event) {
         },
         success: function (data) {
             let json = JSON.parse(data);
-
-            if (json.status !== 200) {
-                alert('Вы не авторизованы! Авторизуйтесь снова');
-                return;
-            }
-
-            if (json.result === 1)
-                alert('ok');
+           
+            if (json.result > 0)
+                alert('Ваши ответы приняты');
+            else
+                alert('Ошибка при сохранении результатов!');
+            window.location.replace("/Account");
         }
     });
 });
@@ -57,15 +55,12 @@ function gen_func(c, max_a = 50, max_b = 50) {
     };
 }
 
-function get_random_points(func, count = 3, range = 50) {
+function get_random_points(func) {
     let points = [];
-    for (var i = 0; i < 3; i++) {
-        let x = 0;
-        while (x <= 1 || points.indexOf(x) != -1) {
-            x = getRandomInt(range);
-        }
-        let fx = func.a * x * x + func.b * x + func.c;
-        points.push({x: x, y: fx});
+    let xs = [5, 8, 13];
+    for (var i = 0; i < xs.length; i++) {
+        let fx = func.a * xs[i] * xs[i] + func.b * xs[i] + func.c;
+        points.push({ x: xs[i], y: fx});
     }
     return points;
 }
