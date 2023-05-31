@@ -70,6 +70,11 @@ namespace ShamirApp.Services
                 _logger?.LogInformation("Создание таблицы 'questions'");
                 ExecuteNonQuery(create_table_questions, nc);
             }
+            if (!tables.Contains("results"))
+            {
+                _logger?.LogInformation("Создание таблицы 'results'");
+                ExecuteNonQuery(create_table_results, nc);
+            }
         }
 
         #region [ADMIN USERS]
@@ -455,6 +460,14 @@ namespace ShamirApp.Services
             "id serial primary key," +
             "text VARCHAR(200) not null," +
             "idForm integer references forms (id));";
+
+        private const string create_table_results =
+            "create table results (" +
+            "idform int," +
+            "iduser int," +
+            "idquestion int," +
+            "points varchar(100));" +
+            "CREATE UNIQUE INDEX idform_iduser_idquestion ON public.results USING btree (idform, iduser, idquestion);";
 
         private static string get_users =
             "select u.id, u.login, u.password, u.fio from users u where u.isAdmin = false order by id desc";

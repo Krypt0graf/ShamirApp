@@ -30,18 +30,24 @@ $("#formvote").submit(function (event) {
     $.ajax({
         url: '/Account/SendVote',
         method: 'post',
+        //async: false,
         data: {
             idform: $('#formid').attr('formid'),
             info: JSON.stringify(info),
         },
         success: function (data) {
             let json = JSON.parse(data);
-           
+
             if (json.result > 0)
-                alert('Ваши ответы приняты');
+                swal('Успешно', 'Ваши ответы приняты', 'success')
+                .then(() => {
+                    window.location.replace("/Account");
+                });
             else
-                alert('Ошибка при сохранении результатов!');
-            window.location.replace("/Account");
+                swal('Ошибка', 'Ошибка при сохранении результатов!', 'error')
+                .then(() => {
+                    window.location.replace("/Account");
+                });       
         }
     });
 });

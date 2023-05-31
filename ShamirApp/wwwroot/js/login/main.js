@@ -1,10 +1,7 @@
 $(document).ready(function () {
-
-    $("#login_btn").on("click", function () {
-        
-    });
-
-    $("#register_btn").on("click", function () {
-        
-    });
+    const urlParams = new URLSearchParams(window.location.search);
+    const myParam = urlParams.get('error');
+    if (myParam === '1') {
+        swal('Ошибка', "Некорректный логин или пароль", 'error');
+    }
 });

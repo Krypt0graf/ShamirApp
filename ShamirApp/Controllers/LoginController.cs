@@ -36,7 +36,7 @@ namespace ShamirApp.Controllers
                 else
                     return Redirect("~/Account");
             else
-                return Redirect("~/Login");
+                return Redirect("~/Login?error=1");
         }
     }
 }

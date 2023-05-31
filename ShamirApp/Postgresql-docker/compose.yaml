@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "oxygenDB"
+      POSTGRES_USER: "user"
+      POSTGRES_PASSWORD: "zaqxsw159"
+    ports:
+      - "5434:5432"
