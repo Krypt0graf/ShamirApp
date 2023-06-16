@@ -1,6 +1,6 @@
 ﻿using ShamirApp.Models.Account;
 
-namespace ShamirApp.Services
+namespace ShamirApp.Objects
 {
     public class Result
     {

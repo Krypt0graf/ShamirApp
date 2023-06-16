@@ -1,9 +1,9 @@
-﻿namespace ShamirApp.Services
+﻿namespace ShamirApp.Objects
 {
     public class FormResult
     {
         public int CountVotes { get; set; }
-        public List<Info> Results { get; set; } = new List<Info>();      
+        public List<Info> Results { get; set; } = new List<Info>();
     }
     public class Info
     {

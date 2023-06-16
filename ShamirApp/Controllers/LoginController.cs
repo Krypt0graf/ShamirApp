@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShamirApp.Models;
-using System.Diagnostics;
 using ShamirApp.Services;
 
 namespace ShamirApp.Controllers

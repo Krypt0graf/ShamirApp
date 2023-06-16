@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using Npgsql;
-using Serilog;
-using ShamirApp.Helpers;
 using ShamirApp.Models.Account;
 using ShamirApp.Models.Admin;
-using System.Collections.Generic;
+using ShamirApp.Objects;
 using System.Data;
 using System.Text;
 

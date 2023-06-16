@@ -1,6 +1,4 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace ShamirApp.Services
+﻿namespace ShamirApp.Objects
 {
     public class TokenAuthInfo
     {

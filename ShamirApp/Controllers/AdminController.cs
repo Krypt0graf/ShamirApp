@@ -2,6 +2,7 @@
 using ShamirApp.Services;
 using Newtonsoft.Json;
 using ShamirApp.Models.Account;
+using ShamirApp.Objects;
 
 namespace ShamirApp.Controllers
 {

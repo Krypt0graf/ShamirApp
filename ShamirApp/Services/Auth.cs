@@ -1,4 +1,6 @@
-﻿namespace ShamirApp.Services
+﻿using ShamirApp.Objects;
+
+namespace ShamirApp.Services
 {
     public static class Auth
     {
